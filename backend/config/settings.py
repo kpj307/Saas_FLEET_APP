@@ -42,6 +42,15 @@ INSTALLED_APPS = [
     "rest_framework",
 
     "apps.accounts",
+    "apps.organizations",
+    "apps.vehicles",
+    "apps.maintenance",
+    "apps.documents",
+    "apps.insurance",
+    "apps.notifications",
+    "apps.reports",
+    "apps.income",
+    "apps.expenses",
 ]
 
 MIDDLEWARE = [
@@ -134,14 +143,19 @@ MAILERS = {
 }
 
 REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES": [
+    "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
-    ],
-    "DEFAULT_PERMISSION_CLASSES": [
+    ),
+    "DEFAULT_PERMISSION_CLASSES": (
         "rest_framework.permissions.IsAuthenticated",
-    ],
+    ),
 }
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
 ]
+
+AUTH_USER_MODEL = "accounts.User"
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
