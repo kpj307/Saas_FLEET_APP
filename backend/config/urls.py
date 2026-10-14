@@ -17,8 +17,8 @@ urlpatterns = [
     path("api/", include("apps.insurance.urls")),
     path("api/", include("apps.notifications.urls")),
     path("api/", include("apps.reports.urls")),
-    path("api/",include("apps.income.urls"),),
-    path("api/",include("apps.expenses.urls"),),
+    path("api/", include("apps.income.urls"),),
+    path("api/", include("apps.expenses.urls"),),
 
     path(
         "api/auth/token/",
