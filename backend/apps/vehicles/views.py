@@ -1,6 +1,5 @@
 from rest_framework import viewsets
-from rest_framework.exceptions import PermissionDenied, APIException
-from rest_framework import status
+from rest_framework.exceptions import PermissionDenied
 
 from apps.subscriptions.services import effective_plan, subscription_for
 
@@ -26,7 +25,7 @@ class VehicleViewSet(viewsets.ModelViewSet):
         plan = effective_plan(subscription_for(organization))
         vehicle_count = Vehicle.objects.filter(organization=organization).count()
         if vehicle_count >= plan["vehicle_limit"]:
-            raise APIException(
+            raise PermissionDenied(
                 {
                     "code": "vehicle_limit_reached",
                     "detail": (
@@ -36,8 +35,7 @@ class VehicleViewSet(viewsets.ModelViewSet):
                     "plan": plan["code"],
                     "vehicle_limit": plan["vehicle_limit"],
                     "vehicle_count": vehicle_count,
-                },
-                code=status.HTTP_403_FORBIDDEN,
+                }
             )
 
         serializer.save(organization=organization)
