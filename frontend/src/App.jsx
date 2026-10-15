@@ -7,6 +7,8 @@ import {
 } from "react-router-dom";
 
 import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Onboarding from "./pages/Onboarding";
 import Dashboard from "./pages/Dashboard";
 import Vehicles from "./pages/Vehicles";
 import Maintenance from "./pages/Maintenance";
@@ -56,6 +58,30 @@ function App() {
               <Navigate to="/dashboard" replace />
             ) : (
               <Login onLogin={handleLogin} />
+            )
+          }
+        />
+
+        {/* Company registration */}
+        <Route
+          path="/register"
+          element={
+            token ? (
+              <Navigate to="/dashboard" replace />
+            ) : (
+              <Register onLogin={handleLogin} />
+            )
+          }
+        />
+
+        {/* Company onboarding for existing accounts without a company */}
+        <Route
+          path="/onboarding"
+          element={
+            token ? (
+              <Onboarding />
+            ) : (
+              <Navigate to="/login" replace />
             )
           }
         />
