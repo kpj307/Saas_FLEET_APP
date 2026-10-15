@@ -49,13 +49,9 @@ class ReportsSummaryView(APIView):
             vehicle__organization=organization
         )
 
-        income_records = Income.objects.filter(
-            vehicle__organization=organization
-        )
+        income_records = Income.objects.filter(organization=organization)
 
-        expense_records = Expense.objects.filter(
-            vehicle__organization=organization
-        )
+        expense_records = Expense.objects.filter(organization=organization)
 
         notifications = Notification.objects.filter(
             organization=organization
