@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 
 import api from "../api/axios";
 
@@ -130,6 +130,8 @@ function Login({ onLogin }) {
             {loading ? "Logging in..." : "Login"}
           </button>
         </form>
+
+        <p>New to Fleet App? <Link to="/register">Create a company account</Link></p>
       </div>
     </div>
   );
