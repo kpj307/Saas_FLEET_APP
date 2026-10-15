@@ -133,8 +133,8 @@ def activate_verified_payment(payment, transaction_data):
         paid_amount = Decimal(str(transaction_data.get("amount", "0")))
     except Exception as exc:
         raise PaymentVerificationError("Payment amount is invalid.") from exc
-    if paid_amount < payment.amount:
-        raise PaymentVerificationError("The verified payment is below the required amount.")
+    if paid_amount != payment.amount:
+        raise PaymentVerificationError("The verified payment amount does not match the expected amount.")
 
     now = timezone.now()
     with transaction.atomic():
