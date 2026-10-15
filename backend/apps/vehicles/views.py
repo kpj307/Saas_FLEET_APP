@@ -1,6 +1,8 @@
 from rest_framework import viewsets
 from rest_framework.exceptions import PermissionDenied
 
+from apps.subscriptions.services import effective_plan, subscription_for
+
 from .models import Vehicle
 from .serializers import VehicleSerializer
 
@@ -19,6 +21,21 @@ class VehicleViewSet(viewsets.ModelViewSet):
                 "You do not have an organization."
             )
 
-        serializer.save(
-            organization=self.request.user.organization
-        )
+        organization = self.request.user.organization
+        plan = effective_plan(subscription_for(organization))
+        vehicle_count = Vehicle.objects.filter(organization=organization).count()
+        if vehicle_count >= plan["vehicle_limit"]:
+            raise PermissionDenied(
+                {
+                    "code": "vehicle_limit_reached",
+                    "detail": (
+                        f"Your {plan['name']} plan allows up to "
+                        f"{plan['vehicle_limit']} vehicles. Upgrade your plan to add more."
+                    ),
+                    "plan": plan["code"],
+                    "vehicle_limit": plan["vehicle_limit"],
+                    "vehicle_count": vehicle_count,
+                }
+            )
+
+        serializer.save(organization=organization)

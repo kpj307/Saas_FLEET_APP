@@ -11,6 +11,7 @@ function Navbar({ onLogout }) {
     { label: "Maintenance", path: "/maintenance" },
     { label: "Documents", path: "/documents" },
     { label: "Reports", path: "/reports" },
+    { label: "Plans & Billing", path: "/subscription" },
   ];
 
   return (

@@ -62,6 +62,7 @@ INSTALLED_APPS = [
     "apps.reports",
     "apps.income",
     "apps.expenses",
+    "apps.subscriptions",
 ]
 
 MIDDLEWARE = [
@@ -159,3 +160,9 @@ if not DEBUG:
     SECURE_HSTS_SECONDS = int(os.environ.get("DJANGO_HSTS_SECONDS", "31536000"))
     SECURE_HSTS_INCLUDE_SUBDOMAINS = env_bool("DJANGO_HSTS_INCLUDE_SUBDOMAINS", True)
     SECURE_HSTS_PRELOAD = env_bool("DJANGO_HSTS_PRELOAD", False)
+
+# Subscription checkout configuration. Keep provider credentials in deployment secrets.
+FLW_SECRET_KEY = os.environ.get("FLW_SECRET_KEY", "")
+FLW_SECRET_HASH = os.environ.get("FLW_SECRET_HASH", "")
+FLW_REDIRECT_URL = os.environ.get("FLW_REDIRECT_URL", "")
+FRONTEND_URL = os.environ.get("FRONTEND_URL", "http://localhost:5173")
