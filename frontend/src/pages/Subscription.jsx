@@ -13,15 +13,6 @@ function Subscription({ onLogout }) {
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
 
-  async function loadData() {
-    const [overviewResponse, plansResponse] = await Promise.all([
-      api.get("subscription/"),
-      api.get("subscription/plans/"),
-    ]);
-    setOverview(overviewResponse.data);
-    setPlans(plansResponse.data.plans);
-  }
-
   useEffect(() => {
     let active = true;
 
@@ -43,7 +34,14 @@ function Subscription({ onLogout }) {
           if (active) setMessage("Checkout was cancelled. Your current plan has not changed.");
         }
 
-        await loadData();
+        const [overviewResponse, plansResponse] = await Promise.all([
+          api.get("subscription/"),
+          api.get("subscription/plans/"),
+        ]);
+        if (active) {
+          setOverview(overviewResponse.data);
+          setPlans(plansResponse.data.plans);
+        }
       } catch {
         if (active) setError("Unable to load subscription details. Please try again.");
       } finally {
