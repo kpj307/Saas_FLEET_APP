@@ -1,6 +1,5 @@
 from datetime import timedelta
 from decimal import Decimal
-from unittest.mock import patch
 
 from django.contrib.auth import get_user_model
 from django.test import override_settings
@@ -10,8 +9,7 @@ from rest_framework.test import APITestCase
 from apps.organizations.models import Organization
 from apps.vehicles.models import Vehicle
 from .models import Subscription, SubscriptionPayment
-from .plans import PLANS
-from .services import activate_verified_payment, effective_plan
+from .services import PaymentVerificationError, activate_verified_payment, effective_plan
 
 
 class SubscriptionPlanTests(APITestCase):
@@ -70,7 +68,7 @@ class SubscriptionPlanTests(APITestCase):
             currency="UGX",
             tx_ref="test-ref-123",
         )
-        with self.assertRaises(Exception):
+        with self.assertRaises(PaymentVerificationError):
             activate_verified_payment(payment, {
                 "status": "successful",
                 "tx_ref": "different-reference",
@@ -83,3 +81,43 @@ class SubscriptionPlanTests(APITestCase):
     def test_checkout_is_not_enabled_without_provider_credentials(self):
         response = self.client.post("/api/subscription/checkout/", {"plan": "starter"}, format="json")
         self.assertEqual(response.status_code, 503)
+
+    def test_successful_verified_payment_activates_plan_for_thirty_days(self):
+        payment = SubscriptionPayment.objects.create(
+            organization=self.organization,
+            plan="starter",
+            amount=Decimal("30000.00"),
+            currency="UGX",
+            tx_ref="test-success-ref",
+        )
+        subscription = activate_verified_payment(payment, {
+            "id": 98765,
+            "status": "successful",
+            "tx_ref": "test-success-ref",
+            "currency": "UGX",
+            "amount": 30000,
+        })
+        self.assertEqual(subscription.plan, "starter")
+        self.assertEqual(subscription.status, Subscription.Status.ACTIVE)
+        self.assertGreater(subscription.current_period_end, timezone.now() + timedelta(days=29))
+        payment.refresh_from_db()
+        self.assertEqual(payment.status, SubscriptionPayment.Status.SUCCESSFUL)
+
+    def test_payment_amount_must_match_exactly(self):
+        payment = SubscriptionPayment.objects.create(
+            organization=self.organization,
+            plan="starter",
+            amount=Decimal("30000.00"),
+            currency="UGX",
+            tx_ref="test-wrong-amount",
+        )
+        with self.assertRaises(PaymentVerificationError):
+            activate_verified_payment(payment, {
+                "id": 98766,
+                "status": "successful",
+                "tx_ref": "test-wrong-amount",
+                "currency": "UGX",
+                "amount": 30001,
+            })
+        payment.refresh_from_db()
+        self.assertEqual(payment.status, SubscriptionPayment.Status.PENDING)
