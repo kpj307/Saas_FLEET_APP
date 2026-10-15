@@ -7,6 +7,7 @@ import {
 } from "react-router-dom";
 
 import Login from "./pages/Login";
+import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import Vehicles from "./pages/Vehicles";
 import Maintenance from "./pages/Maintenance";
@@ -56,6 +57,18 @@ function App() {
               <Navigate to="/dashboard" replace />
             ) : (
               <Login onLogin={handleLogin} />
+            )
+          }
+        />
+
+        {/* Company registration */}
+        <Route
+          path="/register"
+          element={
+            token ? (
+              <Navigate to="/dashboard" replace />
+            ) : (
+              <Register onLogin={handleLogin} />
             )
           }
         />
