@@ -18,6 +18,7 @@ import Insurance from "./pages/Insurance";
 import Reports from "./pages/Reports";
 import Income from "./pages/Income";
 import Expenses from "./pages/Expenses";
+import Subscription from "./pages/Subscription";
 
 function App() {
   const [token, setToken] = useState(
@@ -80,6 +81,18 @@ function App() {
           element={
             token ? (
               <Onboarding />
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          }
+        />
+
+        {/* Subscription plans and billing */}
+        <Route
+          path="/subscription"
+          element={
+            token ? (
+              <Subscription onLogout={handleLogout} />
             ) : (
               <Navigate to="/login" replace />
             )
